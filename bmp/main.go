@@ -53,12 +53,37 @@ func NewInfoHeader(data []byte, offset int) InfoHeader {
 	}
 }
 
+type Pixel struct {
+	r uint8
+	g uint8
+	b uint8
+}
+
+func NewPixel(data []byte, offset int) Pixel {
+	return Pixel{
+		b: data[offset+0],
+		g: data[offset+1],
+		r: data[offset+2],
+	}
+}
+
+type BMP24 struct {
+	header Header
+	info   InfoHeader
+	data   []Pixel
+}
+
+func (b BMP24) DataSize() uint32 {
+	return b.info.width * b.info.height * 3
+}
+
 func main() {
-	dat, err := ioutil.ReadFile("file/480-360-sample.bmp")
-	header := NewHeader(dat, 0)
-	infoHeader := NewInfoHeader(dat, 14)
-	fmt.Println(header)
-	fmt.Println(infoHeader)
+	dat, err := ioutil.ReadFile("file/64-64.bmp")
+	img := BMP24{}
+	img.header = NewHeader(dat, 0)
+	img.info = NewInfoHeader(dat, 14)
+
+	fmt.Println(img)
 	if err != nil {
 		log.Fatal("nope")
 	}
